@@ -16,7 +16,7 @@ In addition to the above libraries, the python environment can be set as follows
 conda create -n CES
 conda activate CES
 pip3 install opencv-python torch
-pip3 install scipy pickle scikit-image matplotlib
+pip3 install scipy pickle scikit-learn scikit-image matplotlib
 ```
 
 To compute CES metric value for a matching-pair, please use the following code.
@@ -33,4 +33,20 @@ To re-implement the experiments in the paper, please download the dataset used i
 ### Sensitivity of CES to Section Thickness
 ```Register
 python test_6_thickness.py --root_dir './data/mito_dxy6_z1_c' --seq_length 1000
+```
+
+### Sensitivity of CES to Horizontal translation-distance
+```Register
+python test_4_category.py --root_dir './data/EXP2_FlyEM_BS/Dataset_z32nm' --seq_length 640
+```
+
+### Performance on RQA-Classification tasks
+```Register
+python classifier_3category.py --root_dir './data/EXP2_FlyEM_BS/Dataset_z32nm' --seq_length 640
+```
+
+To cite this paper, please use
+### Citation
+```
+coming soon
 ```
