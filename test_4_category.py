@@ -45,22 +45,6 @@ class Test4Category:
         with open(root_dir + '/points_' + mode + '.pkl', 'wb') as f:
             pickle.dump(points, f)
 
-
-    @staticmethod
-    def flier_counter(data):
-        median = np.median(data)
-        mean = np.mean(data)
-        print('median {}, mean {}'.format(median, mean))
-        Q1 = np.percentile(data, 25)
-        Q3 = np.percentile(data, 75)
-        IQR = Q3 - Q1
-        Up_lim = Q3 + 1.5 * IQR
-        Down_lim = Q1 - 1.5 * IQR
-        cnt = np.sum(data < Down_lim) + np.sum(data > Up_lim)
-        # print('filer num {}'.format(cnt))
-        print('OR: {}%'.format(cnt/len(data)*100))
-        
-
     def compute_similarity(self, img_r, img_m, mode='CES'):
         sim = 0
         if mode == 'CES':
