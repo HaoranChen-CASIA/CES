@@ -29,12 +29,6 @@ def l_utr_statistic(l_ref, l_mov, mode):
             res = 0
         else:
             res = encoding_zncc.mean()
-    if mode == '0516':
-        Q3 = np.percentile(encoding_zncc, 75)
-        Q1 = np.percentile(encoding_zncc, 25)
-        encoding_zncc[encoding_zncc > Q3] = 0
-        encoding_zncc[encoding_zncc < Q1] = 0
-        res = encoding_zncc.sum()/(128 - np.sum(encoding_zncc == 0))
 
     return res
 
