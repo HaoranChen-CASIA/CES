@@ -14,6 +14,8 @@ import torch
 from scipy.optimize import curve_fit
 from scipy.stats import pearsonr, spearmanr, kendalltau
 
+import argparse
+
 
 class Test4Category:
     def __init__(self):
@@ -135,13 +137,19 @@ class Test4Category:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root_dir", type=str, default='./data/EXP2_FlyEM_BS/Dataset_z32nm')
+    parser.add_argument("--seq_length", type=int, default=640)
+    args = parser.parse_args()
+    root_dir = args.root_dir
+    seq_length = args.seq_length
+    
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     T4C = Test4Category()
-    basic_dir = './data/EXP2_FlyEM_Neurite_xy16nm/'
-    seq_length = 640
 
     mode = 'CES'
     # compute and save points
     T4C.test_4_cata_and_save_points(root_dir, seq_length=seq_length, mode=mode)
+    # draw scatter plots and fitting curve
     T4C.plot_figures_inverse(root_dir, points, mode, fig='dist_plot', fit=True, discard_CA=False,
                              p0=np.array([1, 1, 1, 1]))
