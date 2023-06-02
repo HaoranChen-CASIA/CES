@@ -4,7 +4,9 @@ import numpy as np
 from skimage.util import view_as_windows
 import cv2
 
-from Judge.test_4_category import Test4Category
+from test_4_category import Test4Category
+
+import argparse
 
 
 def draw_boxplot(data, mode, split=200):
@@ -60,18 +62,10 @@ def flier_counter(data):
 
 
 def test_on_2_section(T4C, layer_ref, layer_mov, mode):
-    if mode == 'denseSIFT+l2dist':
-        desc_method = T4C.sift
-    else:
-        desc_method = T4C.orb
-    if mode in ['MSE', 'SSIM', 'CPC', 'NMI', 'NCCNet+NCC', 'denseSuperPoint+l2dist', 'DISTS']:
-        patch_size = (64, 64)
-        stride = (64, 64)
-    else:
-        layer_ref = np.pad(layer_ref, ((32, 32), (32, 32)), 'constant', constant_values=0)
-        layer_mov = np.pad(layer_mov, ((32, 32), (32, 32)), 'constant', constant_values=0)
-        patch_size = (128, 128)
-        stride = (64, 64)
+    layer_ref = np.pad(layer_ref, ((32, 32), (32, 32)), 'constant', constant_values=0)
+    layer_mov = np.pad(layer_mov, ((32, 32), (32, 32)), 'constant', constant_values=0)
+    patch_size = (128, 128)
+    stride = (64, 64)
     # divide into patches
     patches_ref = view_as_windows(layer_ref, patch_size, step=stride)
     patches_mov = view_as_windows(layer_mov, patch_size, step=stride)
@@ -82,7 +76,7 @@ def test_on_2_section(T4C, layer_ref, layer_mov, mode):
         for col in range(n_cols):
             img_r = patches_ref[row, col]
             img_m = patches_mov[row, col]
-            data_i.append(T4C.compute_similarity(desc_method, img_r, img_m, mode))
+            data_i.append(T4C.compute_similarity(img_r, img_m, mode))
     data_i = np.array(data_i).ravel()
     return data_i
 
@@ -100,12 +94,17 @@ def test_on_fixed_thickness(T4C, root_dir, seq_length, mode, z_step):
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # avoid traffic jam
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root_dir", type=str, default='./data/mito_dxy6_z1_c')
+    parser.add_argument("--seq_length", type=int, default=1000)
+    args = parser.parse_args()
+    root_dir = args.root_dir
+    seq_length = args.seq_length
+    
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     T4C = Test4Category()
-    root_dir = '../data/mito_dxy6_z1_c'
-    seq_length = 1000
 
-    mode = 'denseUTR+l2dist'
+    mode = 'CES'
     data = []
     print('Current mode: {}'.format(mode))
     for z_step in [1, 2, 4, 6, 8, 10]:  # z_distance [5, 10, 20, 30, 40, 50]nm
