@@ -7,13 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
 
-def generate_classify_dataset(T4C, root_dir, seq_length, mode, z_fill=4):
+def generate_classify_dataset(T4C, root_dir, seq_length, mode='CES', z_fill=4):
     print('Current Mode: ', mode)
     points = []
-    if mode == 'SIFT+l2dist' or mode == 'denseSIFT+l2dist':
-        desc_method = T4C.sift
-    else:
-        desc_method = T4C.orb
     for cata in ['/CA/', '/SA/', '/PA/', '/WA/']:
         ref_dir = root_dir + cata + 'ref/'
         tgt_dir = root_dir + cata + 'mov/'
@@ -21,7 +17,7 @@ def generate_classify_dataset(T4C, root_dir, seq_length, mode, z_fill=4):
         for idx in range(0, seq_length, 1):
             img_r = cv2.imread(ref_dir + str(idx).zfill(z_fill) + '.png', 0)
             img_m = cv2.imread(tgt_dir + str(idx).zfill(z_fill) + '.png', 0)
-            sim = T4C.compute_similarity(desc_method, img_r, img_m, mode=mode)
+            sim = T4C.compute_similarity(img_r, img_m, mode=mode)
             pt.append(sim)
         T4C.flier_counter(pt)
         points.append(pt)
@@ -33,11 +29,7 @@ def generate_classify_dataset(T4C, root_dir, seq_length, mode, z_fill=4):
 
 def combine_all_dataset(root_dir, seq_length, save=True):
     # step 1: load point dataset
-    for mode in ['CES',
-                 'MSE', 'SSIM', 'CPC',
-                 'denseSIFT+l2dist', 'denseORB+hamming',
-                 'NCCNet+NCC',
-                 'denseHardNet+l2dist', 'denseSuperPoint+l2dist', 'denseAANet+l2dist', 'DISTS']:
+    for mode in ['CES']:
         with open(root_dir + '/points_' + mode + '.pkl', 'rb') as f:
             points = pickle.load(f)
         flatten_points = np.array(list(chain(*points)))
@@ -133,63 +125,18 @@ def get_F1(C):
         print(cate + ' F1 score {}, precision {}, recall {}'.format(F1, precision, recall))
         idx += 1
 
-
-def knn_classify(mode, root_dir):
-    x_train_src, x_test_src, y_train, y_test = load_dataset(root_dir)
-
-    print('\nmode={}'.format(mode))
-    if mode == 'Intensity':
-        x_train = x_train_src[:, 1:4]
-        x_test = x_test_src[:, 1:4]
-    if mode == 'Handcrafted':
-        x_train = x_train_src[:, 4:6]
-        x_test = x_test_src[:, 4:6]
-    if mode == 'DeepLearning':
-        ces_train = x_train_src[:, 0].reshape(-1, 1)
-        ces_test = x_test_src[:, 0].reshape(-1, 1)
-        hd_train = x_train_src[:, 7].reshape(-1, 1)
-        hd_test = x_test_src[:, 7].reshape(-1, 1)
-        aa_train = x_train_src[:, 9].reshape(-1, 1)
-        aa_test = x_test_src[:, 9].reshape(-1, 1)
-        x_train = np.concatenate((ces_train, hd_train, aa_train), axis=1)
-        x_test = np.concatenate((ces_test, hd_test, aa_test), axis=1)
-    score = []
-
-    k_s, k_e = 1, 15
-    for k in range(k_s, k_e):
-        knn, _ = train_and_show_acc(x_train, y_train, x_test, y_test, score, k)
-
-    score = np.array(score)
-    print('max acc at k={}'.format(k_s + np.where(score == score.max())[0][0]))
-    k = k_s + np.where(score == score.max())[0][0]
-
-    # record best performance
-    score = []
-    knn, y_pre = train_and_show_acc(x_train, y_train, x_test, y_test, score, k, show=True)
-    C = confusion_matrix(y_test, y_pre, labels=[0, 1, 2])
-    get_F1(C)
-    draw_confusion_metrics(root_dir, C, mode)
-
-
+        
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # avoid traffic jam
-    # T4C = Test4Category()
-    # root_dir = '../data/Dataset_FlyEM_v2'
-    # seq_length = 750
-    # root_dir = '../data/Dataset_Lucchi_v2'
-    # seq_length = 615
+    T4C = Test4Category()
     root_dir = '../data/EXP2_FlyEM_BS/Dataset_z32nm'
     seq_length = 640
 
-    # x_train_src, x_test_src, y_train, y_test = combine_all_dataset(root_dir, seq_length, save=True)
-    x_train_src, x_test_src, y_train, y_test = load_dataset(root_dir)
+    x_train_src, x_test_src, y_train, y_test = combine_all_dataset(root_dir, seq_length, save=True)
+    # x_train_src, x_test_src, y_train, y_test = load_dataset(root_dir)
 
     idx = 0
-    for mode in ['CES',
-                 'MSE', 'SSIM', 'CPC',
-                 'denseSIFT+l2dist', 'denseORB+hamming',
-                 'NCCNet+NCC',
-                 'denseHardNet+l2dist', 'denseSuperPoint+l2dist', 'denseAANet+l2dist', 'DISTS']:
+    for mode in ['CES']:
         print('\nmode={}'.format(mode))
         x_train = x_train_src[:, idx].reshape(-1, 1)
         x_test = x_test_src[:, idx].reshape(-1, 1)
@@ -209,9 +156,6 @@ if __name__ == '__main__':
         get_F1(C)
         draw_confusion_metrics(root_dir, C, mode)
         idx += 1
-
-    for mode in ['Intensity', 'Handcrafted', 'DeepLearning']:
-        knn_classify(mode, root_dir)
 
     print('done')
 
