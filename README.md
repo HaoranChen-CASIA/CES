@@ -25,7 +25,7 @@ To compute CES metric value for a matching-pair, please use the following code.
 python compute_ces.py --reference chunk_ref.png --moving chunk_mov.png
 ```
 
-To re-implement the experiments in the paper, please download the dataset used in this paper first.
+To re-implement the experiments in the paper, it is recommended to download the dataset used in this paper.
 ### Datasets in the paper
 
 [CSTCloud]()
