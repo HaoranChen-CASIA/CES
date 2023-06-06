@@ -4,7 +4,6 @@ This repository contains the official implementation of the paper
 
 
 ![Python 3.9](https://img.shields.io/badge/python-3.9-green.svg?style=plastic) ![PyTorch 1.13.0](https://img.shields.io/badge/pytorch-1.13.0-green.svg?style=plastic) 
-![license MIT](https://img.shields.io/github/license/HaoranChen-CASIA/CES?style=plastic)
 
 ## Using the Code
 ### Requirements
