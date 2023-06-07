@@ -18,7 +18,7 @@ pip3 install opencv-python torch
 pip3 install scipy pickle scikit-learn scikit-image matplotlib
 ```
 
-To compute CES metric value for a matching-pair, please use the following code.
+To simply compute CES metric value for a matching-pair, please use the following code.
 ### Compute CES for a matching-pair
 ```Register
 python compute_ces.py --reference chunk_ref.png --moving chunk_mov.png
