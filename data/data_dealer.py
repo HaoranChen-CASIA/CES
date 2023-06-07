@@ -13,6 +13,7 @@ from multiprocessing import Pool
 import tifffile as tiff
 
 
+# Caution: some of the following function defined in this class were not used
 class DataDealer:
     def __init__(self, args):
         self.src_path = args.src_path
@@ -314,22 +315,20 @@ def get_parser():
 
 
 if __name__ == '__main__':
+    # The following code can help in generating 4-category dataset automatically
     args = get_parser()
-    # args.src_path, datatype = './data/Lucchi++/Lucchi_dxy6_z1/', 'raw'
-    # z_step, step, seqlength = 2, 32, 1060  # thickness = z_step*z_step, x-y step = step pixels
-    # #
-    # # # # args.src_path, datatype = './data/FlyEM_32nm_raw/', 'raw'
-    # # # args.src_path, datatype = './data/FlyEM_32nm_labels/', 'label'
-    # # # z_step, step, seqlength = 1, 32, 200
-    # #
-    # DD = DataDealer(args)
-    #
-    # for catagory in ['CA', 'SA', 'PA', 'WA']:
-    #     DD.construct_dataset_chunk_wise(1, seqlength, z_step, step, catagory, sample_dist=40, datatype=datatype)
-
-    args.src_path = './data/FlyEM_8nm_raw/'
+    args.src_path, datatype = './data/FlyEM_32nm_raw/', 'raw'
+    z_step, step, seqlength = 1, 32, 200
+    
     DD = DataDealer(args)
-    DD.down_sample_as_wish(args.src_path, [8, 8, 16], '.png', 0, 799, z_step=1)
+    
+    for catagory in ['CA', 'SA', 'PA', 'WA']:
+        DD.construct_dataset_chunk_wise(1, seqlength, z_step, step, catagory, sample_dist=40, datatype=datatype)
+
+    # The following code can help in generating downsampled dataset
+    # args.src_path = './data/FlyEM_8nm_raw/'
+    # DD = DataDealer(args)
+    # DD.down_sample_as_wish(args.src_path, [8, 8, 16], '.png', 0, 799, z_step=1)
 
 
 
