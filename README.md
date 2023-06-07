@@ -36,12 +36,12 @@ python test_6_thickness.py --root_dir './data/mito_dxy6_z1_c' --seq_length 1000
 
 ### Sensitivity of CES to Horizontal translation-distance
 ```Register
-python test_4_category.py --root_dir './data/EXP2_FlyEM_BS/Dataset_z32nm' --seq_length 640
+python test_4_category.py --root_dir './data/EXP2_FlyEM_OCG/Dataset_z32nm' --seq_length 640
 ```
 
 ### Performance on RQA-Classification tasks
 ```Register
-python classifier_3category.py --root_dir './data/EXP2_FlyEM_BS/Dataset_z32nm' --seq_length 640
+python classifier_3category.py --root_dir './data/EXP2_FlyEM_OCG/Dataset_z32nm' --seq_length 640
 ```
 
 To cite this paper, please use
